@@ -1,21 +1,37 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div id="carouselExample" class="carousel slide">
-  <div class="carousel-inner">
+<div id="carouselExample" class="carousel slide">
+    <div class="carousel-inner">
 
-    {% for img_url in img_urls %}
-      <div class="carousel-item {% if forloop.first %}active{% endif %}">
-        <img src="{{ img_url }}" class="d-block w-100" alt="{{ img_url }}">
-      </div>
-    {% endfor %}
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+        {% for img_url in img_urls %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img src="{{ img_url }}" class="d-block w-100" alt="{{ img_url }}">
+        </div>
+        {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<div class="container">
+    <h1 class="text-center">Top Products</h1>
+    <div class="products-list">
+        {% for product in products %}
+        <div class="card" style="width: 18rem;">
+            <img src="/media/{{ product.main_image }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.title }}</h5>
+                <p class="card-text">{{ product.price }}$</p>
+                <a href="#" class="btn btn-primary">Buy</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
