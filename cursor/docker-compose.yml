@@ -28,6 +28,9 @@ services:
       - db
     networks:
       - app
+    env_file:
+      - .env
+    tty: true
 
 
 

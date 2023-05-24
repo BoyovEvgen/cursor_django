@@ -2,6 +2,23 @@ from django.db import models
 from django.db.models import Q
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255, unique=True, default="slug")
+    parent = models.ForeignKey("Category", null=True, blank=True, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.title
+
+    # @property
+    # def category_tree(self):
+    #     tree = {'category': self, 'children': []}
+    #     childs = self.category_set.all()
+    #     for child in childs:
+    #         tree['children'].append(child.category_tree)
+    #     return tree
+
+
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -9,6 +26,7 @@ class Product(models.Model):
     discount_price = models.IntegerField(null=True, blank=True)
     show_on_main_page = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    category = models.ManyToManyField(Category)
 
     @property
     def main_image(self):
@@ -29,12 +47,3 @@ class ProductImage(models.Model):
     def __str__(self):
         return str(self.product.id) + " " + self.product.title + "|" + str(self.id)
 
-
-class Category(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.CharField(max_length=255, unique=True, default="slug")
-    parent = models.ForeignKey("Category", null=True, blank=True, on_delete=models.PROTECT)
-    products = models.ManyToManyField(Product)
-
-    def __str__(self):
-        return self.title

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center">{{ product.title }}</h1>
+
+
+    <div class="card col-md-6 offset-md-3" style="width: 40rem;">
+        <div id="carouselExample" class="carousel slide">
+            <div class="carousel-inner">
+
+                {% for img_url in product_imgs %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="/media/{{ img_url.image }}" class="d-block w-100" alt="/media/{{ img_url.image }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">Price: {{ product.price }}$</h5>
+            <p class="card-text">Product id: {{ product.id }}</p>
+            <p class="card-text">Description: </p>
+            <p class="card-text">{{ product.description }}</p>
+            <a href="#" class="btn btn-primary">Buy</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
