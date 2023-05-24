@@ -3,13 +3,13 @@
 <div class="container">
     <h1 class="text-center">{{ category.title }}</h1>
     <ul>
-        {% for category in subcategories %}
+        {% for category in category.subcategories %}
         <li><a href="{% url 'category_page' slug=category.slug %}">{{ category.title }}</a></li>
         {% endfor %}
     </ul>
     <div class="products-list">
-        {% for product in products %}
-        <a href="/products/{{ product.id }}">
+        {% for product in category.products %}
+        <a href="{% url 'product_page' product_id=product.id %}">
             <div class="card" style="width: 18rem;">
                 <img src="/media/{{ product.main_image }}" class="card-img-top" alt="...">
                 <div class="card-body">
@@ -25,3 +25,6 @@
 </div>
 
 {% endblock %}
+
+
+<!--{% url 'product' product_id=product.id %}-->

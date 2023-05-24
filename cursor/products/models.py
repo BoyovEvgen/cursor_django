@@ -10,13 +10,14 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
-    # @property
-    # def category_tree(self):
-    #     tree = {'category': self, 'children': []}
-    #     childs = self.category_set.all()
-    #     for child in childs:
-    #         tree['children'].append(child.category_tree)
-    #     return tree
+    @property
+    def subcategories(self):
+        return self.category_set.all()
+
+    @property
+    def products(self):
+        return self.product_set.filter(is_active=True)
+
 
 
 class Product(models.Model):
@@ -31,6 +32,9 @@ class Product(models.Model):
     @property
     def main_image(self):
         return ProductImage.objects.filter(Q(product_id=self.id) & Q(is_main=True)).first().image
+    @property
+    def all_images(self):
+        return ProductImage.objects.filter(product_id=self.id).values_list('image', flat=True).order_by('-is_main')
 
     def __str__(self):
         return str(self.id) + " " + self.title

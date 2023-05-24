@@ -5,23 +5,16 @@ from main.models import MenuItem
 
 def category_page(request, slug):
     menu_items = MenuItem.objects.all()
-    category = Category.objects.get(slug=slug)
-    subcategories = category.category_set.all()
-    products = category.product_set.filter(is_active=True)
     categories = Category.objects.filter(parent_id=None)
+    category = Category.objects.get(slug=slug)
     return render(request, "category.html",
                   {"menu_items": menu_items,
-                   "category": category,
-                   "subcategories": subcategories,
-                   "products": products,
-                   "categories": categories
-                   }
+                   "categories": categories,
+                   "category": category}
                   )
 
 
-def product_page(request, pk: int):
-    product = Product.objects.get(id=pk)
-    product_imgs = product.productimage_set.all()
-    context = {'product': product,
-               'product_imgs': product_imgs}
+def product_page(request, product_id: int):
+    product = Product.objects.get(id=product_id)
+    context = {'product': product}
     return render(request, 'product.html', context=context)

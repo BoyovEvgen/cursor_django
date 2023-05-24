@@ -9,9 +9,9 @@
         <div id="carouselExample" class="carousel slide">
             <div class="carousel-inner">
 
-                {% for img_url in product_imgs %}
+                {% for img_url in product.all_images %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="/media/{{ img_url.image }}" class="d-block w-100" alt="/media/{{ img_url.image }}">
+                    <img src="/media/{{ img_url }}" class="d-block w-100" alt="/media/{{ img_url }}">
                 </div>
                 {% endfor %}
             </div>
