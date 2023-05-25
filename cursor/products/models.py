@@ -2,6 +2,24 @@ from django.db import models
 from django.db.models import Q
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255, unique=True, default="slug")
+    parent = models.ForeignKey("Category", null=True, blank=True, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def subcategories(self):
+        return self.category_set.all()
+
+    @property
+    def products(self):
+        return self.product_set.filter(is_active=True)
+
+
+
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -9,10 +27,14 @@ class Product(models.Model):
     discount_price = models.IntegerField(null=True, blank=True)
     show_on_main_page = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    category = models.ManyToManyField(Category)
 
     @property
     def main_image(self):
         return ProductImage.objects.filter(Q(product_id=self.id) & Q(is_main=True)).first().image
+    @property
+    def all_images(self):
+        return ProductImage.objects.filter(product_id=self.id).values_list('image', flat=True).order_by('-is_main')
 
     def __str__(self):
         return str(self.id) + " " + self.title
@@ -29,12 +51,3 @@ class ProductImage(models.Model):
     def __str__(self):
         return str(self.product.id) + " " + self.product.title + "|" + str(self.id)
 
-
-class Category(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.CharField(max_length=255, unique=True, default="slug")
-    parent = models.ForeignKey("Category", null=True, blank=True, on_delete=models.PROTECT)
-    products = models.ManyToManyField(Product)
-
-    def __str__(self):
-        return self.title
