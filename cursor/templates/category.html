@@ -1,6 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="container">
+    <form method="POST" action="{% url 'category_page' slug=category.slug %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <select class="form-select" aria-label="Default select example" name="sort_option">
+                <option selected>Not sort</option>
+                <option value="price descending">price descending</option>
+                <option value="price ascending">price ascending</option>
+                <option value="creation date descending">creation date descending</option>
+                <option value="creation date ascending">creation date ascending</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply</button>
+    </form>
     <h1 class="text-center">{{ category.title }}</h1>
     <ul>
         {% for category in category.subcategories %}
@@ -8,7 +22,7 @@
         {% endfor %}
     </ul>
     <div class="products-list">
-        {% for product in category.products %}
+        {% for product in products %}
         <a href="{% url 'product_page' product_id=product.id %}">
             <div class="card" style="width: 18rem;">
                 <img src="/media/{{ product.main_image }}" class="card-img-top" alt="...">

@@ -28,6 +28,7 @@ class Product(models.Model):
     show_on_main_page = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     category = models.ManyToManyField(Category)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def main_image(self):
