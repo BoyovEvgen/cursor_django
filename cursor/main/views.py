@@ -1,22 +1,19 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import MenuItem, SliderItem, Order, OrderItems
+from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages
+from .models import SliderItem, Order, OrderItems
+from .forms import NewUserForm
 from products.models import Product, Category
 
 
-# Create your views here.
-
 def main(request):
-    menu_items = MenuItem.objects.all()
     img_urls_list = SliderItem.objects.values_list('link', flat=True)
     products = Product.objects.filter(show_on_main_page=True)
-    categories = Category.objects.filter(parent_id=None)
 
-    context = {"menu_items": menu_items,
-               'img_urls': img_urls_list,
-               "products": products,
-               "categories": categories}
+    context = {"img_urls": img_urls_list,
+               "products": products}
 
     return render(request, "index.html", context)
 
@@ -80,4 +77,29 @@ def checkout_proceed(request):
             order_item.price = item["price"]
             order_item.quantity = item["quantity"]
             order_item.save()
+    return HttpResponseRedirect("/")
+
+
+def register(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect("/")
+    form = NewUserForm()
+    return render(request, "sign-up.html", {"form": form})
+
+
+def sign_in(request):
+    if request.method == "POST":
+        user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
+        if user:
+            login(request, user)
+        return HttpResponseRedirect('/')
+    return render(request, "sign-in.html")
+
+
+def sign_out(request):
+    logout(request)
     return HttpResponseRedirect("/")
