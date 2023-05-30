@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 from products.models import Product
 import os
 
@@ -53,3 +54,13 @@ class OrderItems(models.Model):
 
     def __str__(self):
         return str(self.order.id) + " " + self.product.title
+
+
+class Discount_code(models.Model):
+    code = models.CharField(max_length=12, primary_key=True)
+    discount = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], null=False)
+    expiration_date = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.discount) + "%, expiration_date: " + str(self.expiration_date)

@@ -3,8 +3,8 @@
         <div class="row d-flex justify-content-between align-items-center">
             <div class="col-md-2 col-lg-2 col-xl-2">
                 <img
-                        src="/media/{{ product.main_image }}"
-                        class="img-fluid rounded-3" alt="{{ product.title }}">
+                        src="{{ product.main_image }}"
+                        class="img-fluid rounded-3" alt="{{ product.main_image }}">
             </div>
             <div class="col-md-3 col-lg-3 col-xl-3">
                 <p class="lead fw-normal mb-2">{{ product.title }}</p>
@@ -24,8 +24,14 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
+
             <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                {% if product.total_price != product.total_price_with_discount %}
+                <h5 style="text-decoration: line-through; color: red;" class="mb-0">${{ product.total_price }}</h5>
+                <h5 class="mb-0">${{ product.total_price_with_discount }}</h5>
+                {% else %}
                 <h5 class="mb-0">${{ product.total_price }}</h5>
+                {% endif %}
             </div>
             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                 <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
