@@ -34,7 +34,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'first_name', 'last_name', 'email', 'address', 'address2', 'country', 'city', 'postcode', 'total_price', 'items']
+        fields = ['id', 'user', 'first_name', 'last_name', 'email', 'address',
+                  'address2', 'country', 'city', 'postcode', 'total_price', 'items']
 
 
 class OrderItemsCreateSerializer(serializers.ModelSerializer):
@@ -45,10 +46,11 @@ class OrderItemsCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     items = OrderItemsCreateSerializer(many=True)
     class Meta:
         model = Order
-        fields = ['first_name', 'last_name', 'email', 'address', 'address2', 'country', 'city', 'postcode', 'items']
+        fields = ['user', 'first_name', 'last_name', 'email', 'address', 'address2', 'country', 'city', 'postcode', 'items']
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")

@@ -2,10 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from .serializers import ProductSerializer, OrderSerializer, OrderCreateSerializer
 from products.models import Product, Category
 from main.models import Order, OrderItems
-# from rest_framework import generics
+from .permissions import IsAuthorOrReadOnly
 
 class ProductView(APIView):
 
@@ -69,21 +70,15 @@ class CategoryProductsView(APIView):
 
 
 class OrdersView(APIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     def get(self, request, format=None):
         products = Order.objects.all()
         serialized_order = OrderSerializer(products, many=True)
         return Response(serialized_order.data)
 
 
-    # def post(self, request):
-    #     order = OrderCreateSerializer(data=request.data)
-    #     if order.is_valid():
-    #         order.save()
-    #         return Response(status=201)
-
-
 class OrderSingleView(APIView):
-
+    permission_classes = (IsAuthorOrReadOnly,)
     def get_object(self, id):
         try:
             order = Order.objects.get(id=id)
@@ -115,3 +110,4 @@ class OrderSingleView(APIView):
 
 class OrderCreateView(CreateAPIView):
     serializer_class = OrderCreateSerializer
+    permission_classes = (IsAuthenticated,)

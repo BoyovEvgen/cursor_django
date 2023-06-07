@@ -1,10 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from products.models import Product
 import os
 
-# Create your models here.
+User = get_user_model()
 
 
 class MenuItem(models.Model):
@@ -41,6 +42,7 @@ class Order(models.Model):
     city = models.CharField(max_length=255)
     postcode = models.CharField(max_length=255)
     total_price = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
 
     def __str__(self):
         return str(self.id) + " " + self.address

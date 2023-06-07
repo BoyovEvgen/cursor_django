@@ -71,6 +71,7 @@ def checkout_proceed(request):
         order.city = request.POST.get("city")
         order.postcode = request.POST.get("postcode")
         order.total_price = sum(map(lambda cart_item: cart_item["total_price_with_discount"], card_products))
+        order.user = request.user
         order.save()
         for item in card_products:
             order_item = OrderItems()
