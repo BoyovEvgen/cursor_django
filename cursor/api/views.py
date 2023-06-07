@@ -1,8 +1,10 @@
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, OrderSerializer, OrderCreateSerializer
 from products.models import Product, Category
+from main.models import Order, OrderItems
 # from rest_framework import generics
 
 class ProductView(APIView):
@@ -48,7 +50,6 @@ class ProductSingleView(APIView):
         return Response(None, status.HTTP_400_BAD_REQUEST)
 
 
-
 class CategoryProductsView(APIView):
     def get_object(self, id):
         try:
@@ -64,3 +65,53 @@ class CategoryProductsView(APIView):
                 products = ProductSerializer(category.products, many=True)
                 return Response(products.data)
         return Response(None, status.HTTP_404_NOT_FOUND)
+
+
+
+class OrdersView(APIView):
+    def get(self, request, format=None):
+        products = Order.objects.all()
+        serialized_order = OrderSerializer(products, many=True)
+        return Response(serialized_order.data)
+
+
+    # def post(self, request):
+    #     order = OrderCreateSerializer(data=request.data)
+    #     if order.is_valid():
+    #         order.save()
+    #         return Response(status=201)
+
+
+class OrderSingleView(APIView):
+
+    def get_object(self, id):
+        try:
+            order = Order.objects.get(id=id)
+            return order
+        except Order.DoesNotExist:
+            return None
+
+    def get(self, request, id):
+        order = self.get_object(id)
+        serialized_order = OrderSerializer(order)
+        return Response(serialized_order.data)
+
+    def put(self, request, id):
+        order = self.get_object(id)
+        if order is not None:
+            serialized_order = OrderSerializer(instance=order, data=request.data)
+            if serialized_order.is_valid():
+                serialized_order.save()
+                return Response(serialized_order.data)
+        return Response(None, status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        order = self.get_object(id)
+        if order is not None:
+            order.delete()
+            return Response(None, status.HTTP_204_NO_CONTENT)
+        return Response(None, status.HTTP_400_BAD_REQUEST)
+
+
+class OrderCreateView(CreateAPIView):
+    serializer_class = OrderCreateSerializer
