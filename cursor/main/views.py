@@ -1,3 +1,4 @@
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -6,6 +7,7 @@ from django.contrib import messages
 from .models import SliderItem, Order, OrderItems, Discount_code
 from .forms import NewUserForm
 from products.models import Product, Category
+from telegram.telegramBot import serialize_send_message
 
 
 def main(request):
@@ -14,7 +16,6 @@ def main(request):
 
     context = {"img_urls": img_urls_list,
                "products": products}
-
     return render(request, "index.html", context)
 
 
@@ -83,6 +84,7 @@ def checkout_proceed(request):
 
         request.session['cart'] = []
         request.session['discount'] = None
+        serialize_send_message(order)
     return HttpResponseRedirect("/")
 
 

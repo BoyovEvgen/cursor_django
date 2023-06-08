@@ -155,4 +155,5 @@ LOGGING = {
     },
 }
 
+TOKEN_TELEGRAM = os.environ.get("TOKEN_TELEGRAM")
 
