@@ -5,8 +5,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from .serializers import ProductSerializer, OrderSerializer, OrderCreateSerializer
 from products.models import Product, Category
-from main.models import Order, OrderItems
+from main.models import Order
 from .permissions import IsAuthorOrReadOnly
+
 
 class ProductView(APIView):
 

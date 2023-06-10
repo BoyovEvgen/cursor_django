@@ -1,7 +1,7 @@
 
 from rest_framework import serializers
 from products.models import Product, Category
-from main.models import OrderItems, Order
+from main.models import OrderItem, Order
 from django.db import transaction
 
 
@@ -25,7 +25,7 @@ class OrderItemsSerializer(serializers.ModelSerializer):
     # product = serializers.SlugRelatedField(slug_field="title", read_only=True)
 
     class Meta:
-        model = OrderItems
+        model = OrderItem
         fields = ["id", "quantity", "price", "product"]
 
 
@@ -41,7 +41,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderItemsCreateSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), required=True)
     class Meta:
-        model = OrderItems
+        model = OrderItem
         fields = ['product', 'quantity']
 
 
@@ -65,7 +65,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 quantity = item_data['quantity']
 
                 try:
-                    order_item = OrderItems.objects.create(order=order, product=product, quantity=quantity,
+                    order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity,
                                                            price=product.price)
                     order_item.save()
                     total_price += product.price * quantity

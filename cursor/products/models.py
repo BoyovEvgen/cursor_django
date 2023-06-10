@@ -1,5 +1,9 @@
 from django.db import models
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class Category(models.Model):
@@ -42,7 +46,7 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="uploads/products/")
     is_main = models.BooleanField(default=False)
 
@@ -52,3 +56,16 @@ class ProductImage(models.Model):
     def __str__(self):
         return str(self.product.id) + " " + self.product.title + "|" + str(self.id)
 
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments")
+    parent = models.ForeignKey("Comment", null=True, blank=True, on_delete=models.CASCADE, related_name="childs")
+    text = models.TextField()
+
+    @property
+    def child_comments(self):
+        return self.childs.all()
+
+    def __str__(self):
+        return self.text

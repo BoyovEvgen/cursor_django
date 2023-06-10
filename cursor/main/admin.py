@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MenuItem, SliderItem, OrderItems, Order, Discount_code
+from .models import MenuItem, SliderItem, OrderItem, Order, Discount_code
 
 
 class SliderItemAdmin(admin.ModelAdmin):
@@ -11,8 +11,9 @@ admin.site.register(SliderItem, SliderItemAdmin)
 admin.site.register(Discount_code)
 
 
-class OrderItemsInline(admin.TabularInline):
-    model = OrderItems
+# class OrderItemsInline(admin.TabularInline):  # відображення в рядок
+class OrderItemsInline(admin.StackedInline):  # в колонку
+    model = OrderItem
     extra = 0
 
 class OrderAdmin(admin.ModelAdmin):

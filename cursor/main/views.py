@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .models import SliderItem, Order, OrderItems, Discount_code
+from .models import SliderItem, Order, OrderItem, Discount_code
 from .forms import NewUserForm
 from products.models import Product, Category
 from telegram.telegramBot import serialize_send_message
@@ -75,7 +75,7 @@ def checkout_proceed(request):
         order.user = request.user
         order.save()
         for item in card_products:
-            order_item = OrderItems()
+            order_item = OrderItem()
             order_item.product_id = item["id"]
             order_item.order_id = order.id
             order_item.price = item["total_price_with_discount"]
