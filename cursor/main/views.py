@@ -7,7 +7,7 @@ from django.contrib import messages
 from .models import SliderItem, Order, OrderItem, Discount_code
 from .forms import NewUserForm
 from products.models import Product, Category
-from telegram.telegramBot import serialize_send_message
+from telegram_bot.bot_methods import serialize_order_send_message
 
 
 def main(request):
@@ -84,7 +84,7 @@ def checkout_proceed(request):
 
         request.session['cart'] = []
         request.session['discount'] = None
-        serialize_send_message(order)
+        serialize_order_send_message(order)
     return HttpResponseRedirect("/")
 
 

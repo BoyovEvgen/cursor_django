@@ -18,6 +18,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/python/Dockerfile
+    command: gunicorn --bind 0.0.0.0:8000 cursor.wsgi
     ports:
       - 8080:5000
     environment:
@@ -45,6 +46,29 @@ services:
       - ./docker/db:/var/lib/mysql
     networks:
       - app
+
+
+  management:
+    restart: always
+    container_name: "managementTgBot"
+    build:
+      dockerfile: ./docker/python/Dockerfile
+      context: ./
+    volumes:
+      - .:/app
+    command: python3 manage.py polling
+    environment:
+      PYTHONBUFFERED: 1
+    env_file:
+      - .env
+    depends_on:
+      - app
+      - db
+      - nginx
+    networks:
+      - app
+    tty: true
+
 
 
 networks:
