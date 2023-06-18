@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from products.models import Product, Category
-from main.models import Order
+from products.models import Order
 from .serializers import ProductSerializer, CategorySerializer, OrderSerializer
 
 

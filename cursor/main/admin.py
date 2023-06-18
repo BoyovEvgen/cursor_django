@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import MenuItem, SliderItem, OrderItem, Order, Discount_code
-
+from .models import MenuItem, SliderItem, Discount_code, CustomUser
+from products.models import OrderItem, Order
 
 class SliderItemAdmin(admin.ModelAdmin):
     exclude = ('link',)  # виключає відображення цього пункту в адмін панелі. автозаповнення прописав в models.py
@@ -9,6 +9,7 @@ class SliderItemAdmin(admin.ModelAdmin):
 admin.site.register(MenuItem)
 admin.site.register(SliderItem, SliderItemAdmin)
 admin.site.register(Discount_code)
+admin.site.register(CustomUser)
 
 
 # class OrderItemsInline(admin.TabularInline):  # відображення в рядок

@@ -1,13 +1,20 @@
+# from datetime import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .models import SliderItem, Order, OrderItem, Discount_code
+from django.utils import timezone
+
+from .models import SliderItem, Discount_code
 from .forms import NewUserForm
-from products.models import Product, Category
+from products.models import Product, Category, Order, OrderItem
 from telegram_bot.bot_methods import serialize_order_send_message
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+User = get_user_model()
+
 
 
 def main(request):
@@ -19,6 +26,7 @@ def main(request):
     return render(request, "index.html", context)
 
 
+@login_required
 def add_to_cart(request, product_id: int):
     discount = request.session.get('discount', None)
     is_product_already_exist = False
@@ -48,17 +56,20 @@ def add_to_cart(request, product_id: int):
     return HttpResponseRedirect("/")
 
 
+@login_required
 def cart(request):
     cart_products = request.session.get("cart", [])
     discount = request.session.get('discount', None)
     return render(request, "cart.html", {'cart_products': cart_products, 'discount': discount})
 
 
+@login_required
 def checkout(request):
     total_price = sum(map(lambda cart_item: cart_item["total_price_with_discount"], request.session.get("cart", [])))
     return render(request, "checkout.html", {"total_price": total_price})
 
 
+@login_required
 def checkout_proceed(request):
     if request.method == "POST":
         card_products = request.session.get("cart", [])
@@ -93,6 +104,7 @@ def register(request):
         form = NewUserForm(request.POST)
         if form.is_valid():
             user = form.save()
+            print(user)
             login(request, user)
             return HttpResponseRedirect("/")
     form = NewUserForm()
@@ -101,10 +113,14 @@ def register(request):
 
 def sign_in(request):
     if request.method == "POST":
-        user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
+        user = authenticate(username=request.POST.get("login"), password=request.POST.get("password"))
         if user:
             login(request, user)
+            next_page = request.POST.get('next')
+            if next_page:
+                return redirect(next_page)
         return HttpResponseRedirect('/')
+
     return render(request, "sign-in.html")
 
 
@@ -113,14 +129,12 @@ def sign_out(request):
     return HttpResponseRedirect("/")
 
 
+@login_required
 def discount_apply(request):
     if request.method == 'POST':
-        code = request.POST.get("discount_code")
-        try:
-            discount_code = Discount_code.objects.get(code=code)
-            if discount_code.is_active:
-                request.session['discount'] = discount_code.discount
-        except Discount_code.DoesNotExist:
+        if discount_code := check_discount_code(request.POST.get("discount_code"), request.user):
+            request.session['discount'] = discount_code.discount
+        else:
             request.session['discount'] = None
 
         if cart := request.session.get('cart'):
@@ -133,3 +147,23 @@ def discount_apply(request):
 
 def update_price_with_discount(discount, price):
     return price - price / 100 * discount if discount else price
+
+
+def check_discount_code(code: str, user: User):
+    try:
+        discount_code = Discount_code.objects.get(code=code)
+    except Discount_code.DoesNotExist:
+        print('!!!!!!!!!!!!!!!!!!!!!!!! несуществует')
+        return None
+    if not discount_code.is_active:
+        print('!!!!!!!!!!!!!!!!!!!!!!!! неактивен')
+        return None
+    if discount_code.expiration_date and discount_code.expiration_date <= timezone.now():
+        print('!!!!!!!!!!!!!!!!!!!!!!!! время')
+        return None
+    if discount_code.for_user_phone and discount_code.for_user_phone != user.phone_number:
+        print(discount_code.for_user_phone)
+        print(user.phone_number)
+        print('!!!!!!!!!!!!!!!!!!!!!!!! нетот юзер')
+        return None
+    return discount_code

@@ -26,12 +26,13 @@ SECRET_KEY = "django-insecure-2mtj5hcaea6lpgchzd*y3o!23l4rfp818h-sv5pg627@+zfj1v
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+BASE_URL = os.environ.get("NGROK_URL") or ''
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:1443", "http://0.0.0.0:1443"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1443", "http://0.0.0.0:1443", BASE_URL]
 
 
 # Application definition
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -42,10 +43,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "rest_framework",
-    "main",
-    "products",
     "api",
     "telegram_bot",
+    "main",
+    "products"
 ]
 
 MIDDLEWARE = [
@@ -99,18 +100,21 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    # },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        'OPTIONS': {
+            'min_length': 4,
+        }
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    # },
+    # {
+    #     "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    # },
 ]
 
 
@@ -161,5 +165,8 @@ TOKEN_TELEGRAM = os.environ.get("TOKEN_TELEGRAM")
 
 ASYNCHRONOUS_MODE = True
 
+AUTH_USER_MODEL = 'main.CustomUser'
 
-BASE_URL = os.environ.get("NGROK_URL") or ''
+AUTHENTICATION_BACKENDS = ['main.backends.EmailBackend']
+
+LOGIN_URL = "/sign-in/"

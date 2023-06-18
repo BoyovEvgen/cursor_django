@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         dispatcher.register_message_handler(start, commands=['start'])
-        dispatcher.register_message_handler(get_all_product, commands=['see_products'])
+        dispatcher.register_message_handler(get_all_product, commands=['view_all_products'])
 
         loop = asyncio.get_event_loop()
         try:

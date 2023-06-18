@@ -23,7 +23,6 @@ class Category(models.Model):
         return self.product_set.filter(is_active=True)
 
 
-
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -51,7 +50,12 @@ class ProductImage(models.Model):
     is_main = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('product', 'is_main')
+        unique_together = ('product', 'is_main')  # можливо створити тільки 2 зображення.
+
+    # class Meta:
+    #     constraints = [
+    #         UniqueConstraint(fields=['product', 'is_main'], condition=models.Q(is_main=True), name='unique_main_image'),
+    #     ]
 
     def __str__(self):
         return str(self.product.id) + " " + self.product.title + "|" + str(self.id)
@@ -69,3 +73,29 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class Order(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    address2 = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    postcode = models.CharField(max_length=255)
+    total_price = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
+
+    def __str__(self):
+        return str(self.id) + " " + self.address
+
+
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    quantity = models.IntegerField()
+    price = models.IntegerField()
+
+    def __str__(self):
+        return str(self.order.id) + " " + self.product.title

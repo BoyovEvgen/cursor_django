@@ -1,7 +1,7 @@
 
 from rest_framework import serializers
 from products.models import Product, Category
-from main.models import OrderItem, Order
+from products.models import OrderItem, Order
 from django.db import transaction
 
 
